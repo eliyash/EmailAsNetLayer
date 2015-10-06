@@ -1,6 +1,6 @@
 #Network communication using email service
 For the need of passing data between random PCs,
-With or without firewall, other networks etc. ->  one can use this library
+With or without firewall, other networks etc.  ->  one can use this library
 
 
 ###Configuring Gmail account

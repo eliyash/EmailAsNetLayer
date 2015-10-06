@@ -1,4 +1,7 @@
-import sys
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# from getpass         import getpassimport sys
 import imaplib
 # import email
 # import email.header

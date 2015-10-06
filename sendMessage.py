@@ -11,7 +11,7 @@ if  len(sys.argv)<3:
 
 login, password = sys.argv[1] , sys.argv[2]
 fromaddr = '%s@gmail.com'%login
-toaddrs  = '%s@gmail.com'%login
+toaddrs  = fromaddr
 msg = 'Data:Now you see me?'
 username = fromaddr
 password = password

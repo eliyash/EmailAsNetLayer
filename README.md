@@ -13,6 +13,6 @@ run:`python *.py <gmail_user_name> <password>`
 
 
 ####Notes & Work in progress
-- For now we are relaying on gmail sevie
+- For now we are relaying on gmail service
 - There is just two PCs communication so far
 - You have a different script for sending and receiving massages

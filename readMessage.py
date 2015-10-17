@@ -48,6 +48,7 @@ def process_mailbox(M):
         print("Massage: %s"% msg[(msg.find("Data:")+5):])
 
         M.store(num,'+X-GM-LABELS', '%s_received'%name_of_machin)
+        M.store(num,'-X-GM-LABELS', '%s'%name_of_machin)
 
 M = imaplib.IMAP4_SSL('imap.gmail.com')
 

@@ -6,7 +6,7 @@ import smtplib
 import sys
 
 if  len(sys.argv)<3:
-    print "error: run 'python *.py email password' "
+    print("error: run 'python *.py email password' ")
     sys.exit(1)
 
 login, password = sys.argv[1] , sys.argv[2]

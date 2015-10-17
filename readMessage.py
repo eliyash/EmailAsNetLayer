@@ -4,28 +4,37 @@
 # from getpass         import getpass
 import sys
 import imaplib
+import json
 # import email
 # import email.header
 # import datetime
 # import getpass
 
 
-if  len(sys.argv)<3:
-    print("error: run 'python *.py email password' ")
-    sys.exit(1)
+# if  len(sys.argv)<4:
+#     print("error: run 'python *.py <email> <password> <target-pc-id>' ")
+#     sys.exit(1)
 
-login, password = sys.argv[1] , sys.argv[2]
 
-EMAIL_FOLDER = "inbox"
+with open('prog_data.json') as data_file:
+    data = json.load(data_file)
+login, password = data["email"] , data["password"]
+name_of_machin = data["this user"]
+
+
+
+
+
+
+EMAIL_FOLDER = name_of_machin
 
 
 def process_mailbox(M):
 
-    rv, data = M.search(None, "ALL")
+    rv, data = M.search(None,'ALL')#BCC', '"eliyashaddget@gmail.com"')
     if rv != 'OK':
         print("No messages found!")
         return
-
     for num in data[0].split():
         rv, data = M.fetch(num, '(RFC822)')
         if rv != 'OK':
@@ -36,9 +45,9 @@ def process_mailbox(M):
         msg = data[0][1]
         # decode = email.header.decode_header(msg['Data'])[0]
         # data = unicode(decode[0])
-        print("Massage:",  msg[(msg.find("Data:")+5):])
+        print("Massage: %s"% msg[(msg.find("Data:")+5):])
 
-        M.store(num,'+X-GM-LABELS', '\\Trash')
+        M.store(num,'+X-GM-LABELS', '%s_received'%name_of_machin)
 
 M = imaplib.IMAP4_SSL('imap.gmail.com')
 
@@ -60,8 +69,8 @@ rv, data = M.select(EMAIL_FOLDER)
 if rv == 'OK':
     # print( "Processing mailbox...\n")
     process_mailbox(M)
-    M.select('[Gmail]/Trash')  # select all trash
-    M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
+    # M.select('[Gmail]/Trash')  # select all trash
+    # M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
     M.expunge()  # not need if auto-expunge enabled
     M.close()
 else:

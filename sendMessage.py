@@ -4,15 +4,18 @@
 # from getpass         import getpass
 import smtplib
 import sys
+import json
 
-if  len(sys.argv)<3:
-    print("error: run 'python *.py email password' ")
-    sys.exit(1)
 
-login, password = sys.argv[1] , sys.argv[2]
+with open('prog_data.json') as data_file:
+    data = json.load(data_file)
+
+login, password = data["email"] , data["password"]
+name_of_machin = data["other user 0"]
+
 fromaddr = '%s@gmail.com'%login
-toaddrs  = fromaddr
-msg = 'Data:Now you see me?'
+toaddrs  = '%s+%s@gmail.com'%(login,name_of_machin)
+msg = 'Data:'+raw_input("massage:")
 username = fromaddr
 password = password
 server = smtplib.SMTP('smtp.gmail.com:587')

@@ -6,6 +6,9 @@ import smtplib
 import sys
 import json
 
+if sys.version_info.major > 2:
+    raw_input = input
+
 def sendMessage(msg = None):
     with open('prog_data.json') as data_file:
         data = json.load(data_file)

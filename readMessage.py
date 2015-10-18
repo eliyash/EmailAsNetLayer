@@ -5,6 +5,10 @@
 import sys
 import imaplib
 import json
+import email
+
+
+from pdb import set_trace as debug
 # import email
 # import email.header
 # import datetime
@@ -26,25 +30,34 @@ class readMessage:
 
     def process_mailbox(self, M):
 
-        rv, data = M.search(None,'ALL')#BCC', '"eliyashaddget@gmail.com"')
+
+        #rv, data = M.search(None,'ALL')
+        rv, data = M.uid('SEARCH',None, 'ALL')
         if rv != 'OK':
             raise MailException("No messages found!")
 
-        for num in data[0].split():
-            rv, data = M.fetch(num, '(RFC822)')
+        for msg_uid in data[0].split():
+            rv, data = M.uid("FETCH", msg_uid, "(RFC822)")
+            #rv, data = M.fetch(msg_uid, '(RFC822)')
             if rv != 'OK':
-                raise MailException("ERROR getting message %d" % num)
+                raise MailException("ERROR getting message " + str(msg_uid))
 
             # msg = email.message_from_string(data[0][1])
-            msg = data[0][1].decode('utf-8') #decode for python 3
+            # debug()
+            msg_str = data[0][1].decode('utf-8') #decode for python 3
             # decode = email.header.decode_header(msg['Data'])[0]
             # data = unicode(decode[0])
-            print("Massage: %s"% msg[(msg.find("Data:")+5):])
+            # M.store(num,'+X-GM-LABELS', '%s_received'%self.name_of_machin)
 
-            M.store(num,'+X-GM-LABELS', '%s_received'%self.name_of_machin)
-            M.store(num,'-X-GM-LABELS', '%s'%self.name_of_machin)
+            result = M.uid('COPY', msg_uid, self.name_of_machin + '_received')
+            if result[0] == 'OK':
+                mov, data = M.uid('STORE', msg_uid , '+FLAGS', '\\Deleted')
 
-    def readMessage(self):
+            #M.store(num,'-X-GM-LABELS', '%s'%self.name_of_machin)
+            #iterator
+            yield msg_str[(msg_str.find("Data:")+5):]
+
+    def readMessages(self):
         M = imaplib.IMAP4_SSL('imap.gmail.com')
 
         try:
@@ -63,17 +76,22 @@ class readMessage:
         rv, data = M.select(self.EMAIL_FOLDER)
         if rv == 'OK':
             # print( "Processing mailbox...\n")
-            self.process_mailbox(M)
+            for msg in self.process_mailbox(M):
+                print ('Massage: %s' %msg)
+
             # M.select('[Gmail]/Trash')  # select all trash
             # M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
             M.expunge()  # not need if auto-expunge enabled
             M.close()
+            #M.logout()?
         else:
             raise MailException("ERROR: Unable to open mailbox ", rv)
+
+
 
     class MailException(Exception):
         pass
 
 if __name__ == '__main__':
     inbox = readMessage()
-    inbox.readMessage()
+    inbox.readMessages()

@@ -50,29 +50,33 @@ def process_mailbox(M):
         M.store(num,'+X-GM-LABELS', '%s_received'%name_of_machin)
         M.store(num,'-X-GM-LABELS', '%s'%name_of_machin)
 
-M = imaplib.IMAP4_SSL('imap.gmail.com')
+def readMessage():
+    M = imaplib.IMAP4_SSL('imap.gmail.com')
 
-try:
-    # rv, data = M.login(login, getpass.getpass())
-    rv, data = M.login(login, password)
-except imaplib.IMAP4.error:
-    print("LOGIN FAILED!!! ")
-    sys.exit(1)
+    try:
+        # rv, data = M.login(login, getpass.getpass())
+        rv, data = M.login(login, password)
+    except imaplib.IMAP4.error:
+        print("LOGIN FAILED!!! ")
+        sys.exit(1)
 
-# print(rv, data)
+    # print(rv, data)
 
-rv, mailboxes = M.list()
-# if rv == 'OK':
-#     print("Mailboxes:")
-#     print(mailboxes)
+    rv, mailboxes = M.list()
+    # if rv == 'OK':
+    #     print("Mailboxes:")
+    #     print(mailboxes)
 
-rv, data = M.select(EMAIL_FOLDER)
-if rv == 'OK':
-    # print( "Processing mailbox...\n")
-    process_mailbox(M)
-    # M.select('[Gmail]/Trash')  # select all trash
-    # M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
-    M.expunge()  # not need if auto-expunge enabled
-    M.close()
-else:
-    print("ERROR: Unable to open mailbox ", rv)
+    rv, data = M.select(EMAIL_FOLDER)
+    if rv == 'OK':
+        # print( "Processing mailbox...\n")
+        process_mailbox(M)
+        # M.select('[Gmail]/Trash')  # select all trash
+        # M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
+        M.expunge()  # not need if auto-expunge enabled
+        M.close()
+    else:
+        print("ERROR: Unable to open mailbox ", rv)
+
+if __name__ == '__main__':
+    readMessage()

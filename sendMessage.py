@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# from getpass         import getpass
+from pdb import set_trace as debug
+
 import smtplib
 import sys
 import json
@@ -9,19 +10,17 @@ import json
 if sys.version_info.major > 2:
     raw_input = input
 
-def sendMessage(msg = None):
-    with open('prog_data.json') as data_file:
-        data = json.load(data_file)
+with open('prog_data.json') as data_file:
+    data = json.load(data_file)
 
+def sendMessage(data,message):
     login, password = data["email"] , data["password"]
     name_of_machin = data["other user 0"]
 
     fromaddr = '%s@gmail.com'%login
     toaddrs  = '%s+%s@gmail.com'%(login,name_of_machin)
-    if msg is not None:
-        msg = 'Data:'+msg
-    else:
-        msg = 'Data:'+raw_input("massage:")
+    msg = 'Data:'+message
+
     username = fromaddr
     password = password
     server = smtplib.SMTP('smtp.gmail.com:587')
@@ -31,7 +30,7 @@ def sendMessage(msg = None):
     server.quit()
 
 if __name__ == '__main__':
-    if len(sys.argv) > 0:
-        sendMessage(sys.argv[0])
+    if len(sys.argv) > 1:
+        sendMessage(data, sys.argv[1])
     else:
-        sendMessage()
+        sendMessage(data, raw_input("message:"))

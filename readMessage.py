@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# from getpass         import getpass
 import sys
 import imaplib
 import json
@@ -13,11 +12,6 @@ from pdb import set_trace as debug
 # import email.header
 # import datetime
 # import getpass
-
-
-# if  len(sys.argv)<4:
-#     print("error: run 'python *.py <email> <password> <target-pc-id>' ")
-#     sys.exit(1)
 
 class readMessage:
 

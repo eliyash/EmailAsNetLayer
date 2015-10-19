@@ -8,8 +8,8 @@ With or without firewall, other networks etc.  ->  one can use this library
 - Make a label in the same name as the "this-user" field in the json file will have
 - Make a filter which forwardes emails addressed youremail+this-user@gmail.com to this-user label
 - Allow the use of untrusted apps:
-    --while in your account go to this link and turn it on
-    --https://www.google.com/settings/security/lesssecureapps
+    * while in your account go to this link and turn it on
+    * https://www.google.com/settings/security/lesssecureapps
 
 
 ###Configuring the app
@@ -20,3 +20,4 @@ With or without firewall, other networks etc.  ->  one can use this library
 - For now we are relaying on gmail service
 - There is just two PCs communication so far
 - You have a different script for sending and receiving massages
+- Add option of fetching all the received massages

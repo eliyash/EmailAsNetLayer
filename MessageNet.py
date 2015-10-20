@@ -18,7 +18,8 @@ class MessageNet:
     def __init__(self):
         with open('prog_data.json') as data_file:
             data = json.load(data_file)
-        self.login, self.password = data["email"] , data["password"]
+        self.login = data["email"]
+        self.password = data["password"]
         self.other_email = data['other email 0']
         self.this_user = data["this user"]
         self.other_user = data['other user 0']
@@ -29,9 +30,8 @@ class MessageNet:
         toaddrs  = '%s@gmail.com'%(self.other_email)
         # toaddrs  = ['%s+%s@gmail.com'%(other_email,other_user)]
         # msg = 'From:%s\nTo:%s@gmail.com\nSubject:%s\n\nData:%s'%(fromaddr, other_email, this_user, message)
-        msg = 'From:%s %s\nTo:%s\nSubject:Subject\n\nData:%s'%(self.this_user, fromaddr, self.other_user, message)
+        msg = 'From:<*>%s %s\nTo:%s\nSubject:Subject\n\nData:%s'%(self.this_user, fromaddr, self.other_user, message)
 
-        print (msg)
         username = fromaddr
         password = self.password
         server = smtplib.SMTP('smtp.gmail.com:587')
@@ -66,7 +66,7 @@ class MessageNet:
 
             #M.store(num,'-X-GM-LABELS', '%s'%self.other_user)
             #iterator
-            yield msg_str[(msg_str.find("Data:")+5):]
+            yield msg_str
 
     def readMessages(self):
         M = imaplib.IMAP4_SSL('imap.gmail.com')
@@ -88,7 +88,11 @@ class MessageNet:
         if rv == 'OK':
             # print( "Processing mailbox...\n")
             for msg in self.process_mailbox(M):
-                print ('Massage: %s' %msg)
+                Massage = msg[(msg.find("Data:")+5):]
+                address = msg[(msg.find("From:<*>")+8):]#TODO spetial sign
+                [machin_other,email_other] = address.split("\r\n")[0].split(" ")
+                print ('%s(%s) says: %s' %(machin_other,email_other,Massage))
+                # print ('address: %s' %address)
 
             # M.select('[Gmail]/Trash')  # select all trash
             # M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
@@ -103,11 +107,14 @@ class MessageNet:
         pass
 
 
-# if __name__ == '__main__':
-#     if len(sys.argv) > 1:
-#         sendMessage(data, sys.argv[1])
-#     else:
-#         sendMessage(data, raw_input("message:"))
 
 if __name__ == '__main__':
-    mail = MessageNet()
+    if (len(sys.argv) < 2 or (sys.argv[1]!="read" and sys.argv[1]!="send")):
+        print("add read/send ")
+    else:
+        mail = MessageNet()
+        if(sys.argv[1]=="read"):
+            mail.readMessages()
+        else:
+            if(len(sys.argv) == 2):  mail.sendMessage(raw_input("message:"))
+            else :  mail.sendMessage(sys.argv[2])

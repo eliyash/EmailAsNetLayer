@@ -15,8 +15,8 @@ from pdb import set_trace as debug
 
 class MessageNet:
 
-    def __init__(self):
-        with open('prog_data.json') as data_file:
+    def __init__(self, json_file = 'prog_data.json'):
+        with open(json_file) as data_file:
             data = json.load(data_file)
         self.login = data["email"]
         self.password = data["password"]
@@ -25,7 +25,6 @@ class MessageNet:
         self.other_user = data['other user 0']
 
     def sendMessage(self,message):
-
         fromaddr = '%s@gmail.com'%self.login
         toaddrs  = '%s@gmail.com'%(self.other_email)
         # toaddrs  = ['%s+%s@gmail.com'%(other_email,other_user)]
@@ -40,72 +39,67 @@ class MessageNet:
         server.sendmail(fromaddr, toaddrs, msg)
         server.quit()
 
-    def process_mailbox(self, M):
+    def process_mailbox(self):
+        rv, data = self.M.select(self.this_user)
+        if rv != 'OK':
+            raise MailException('ERROR: Unable to open mailbox ')
 
-        #rv, data = M.search(None,'ALL')
-        rv, data = M.uid('SEARCH',None, 'ALL')
+        rv, data = self.M.uid('SEARCH',None, 'ALL')
         if rv != 'OK':
             raise MailException("No messages found!")
 
+        #TODO: what happens when new mail arrives?
         for msg_uid in data[0].split():
-            rv, data = M.uid("FETCH", msg_uid, "(RFC822)")
+            rv, data = self.M.uid("FETCH", msg_uid, "(RFC822)")
             #rv, data = M.fetch(msg_uid, '(RFC822)')
             if rv != 'OK':
                 raise MailException("ERROR getting message " + str(msg_uid))
 
-            # msg = email.message_from_string(data[0][1])
-            # debug()
             msg_str = data[0][1].decode('utf-8') #decode for python 3
-            # decode = email.header.decode_header(msg['Data'])[0]
-            # data = unicode(decode[0])
-            # M.store(num,'+X-GM-LABELS', '%s_received'%self.other_user)
-
-            result = M.uid('COPY', msg_uid, self.other_user + '_received')
+            result = self.M.uid('COPY', msg_uid, self.other_user + '_received')
             if result[0] == 'OK':
-                mov, data = M.uid('STORE', msg_uid , '+FLAGS', '\\Deleted')
+                mov, data = self.M.uid('STORE', msg_uid , '+FLAGS', '\\Deleted')
 
-            #M.store(num,'-X-GM-LABELS', '%s'%self.other_user)
             #iterator
             yield msg_str
 
-    def readMessages(self):
-        M = imaplib.IMAP4_SSL('imap.gmail.com')
-
+    def open_read(self):
+        self.M = imaplib.IMAP4_SSL('imap.gmail.com')
         try:
             # rv, data = M.login(login, getpass.getpass())
-            rv, data = M.login(self.login, self.password)
+            rv, data = self.M.login(self.login, self.password)
         except imaplib.IMAP4.error:
             raise MailException("LOGIN FAILED!!! ")
+        rv, mailboxes = self.M.list() #do we need that?
 
-        # print(rv, data)
+    def close_read(self):
+        self.M.expunge()  # not need if auto-expunge enabled
+        self.M.close()
+        #M.logout()?
 
-        rv, mailboxes = M.list()
-        # if rv == 'OK':
-        #     print("Mailboxes:")
-        #     print(mailboxes)
+    #TODO: more parsing options?
+    def parseMsg(self, msg):
+        Massage = msg[(msg.find("Data:")+5):]
+        address = msg[(msg.find("From:<*>")+8):]#TODO special tag
+        [machin_other,email_other] = address.split("\r\n")[0].split(" ")
+        return {'Massage':  Massage,
+                'machin_other' : machin_other,
+                'email_other' : email_other,
+                }
 
-        rv, data = M.select(self.this_user)
-        if rv == 'OK':
-            # print( "Processing mailbox...\n")
-            for msg in self.process_mailbox(M):
-                Massage = msg[(msg.find("Data:")+5):]
-                address = msg[(msg.find("From:<*>")+8):]#TODO spetial sign
-                [machin_other,email_other] = address.split("\r\n")[0].split(" ")
-                print ('%s(%s) says: %s' %(machin_other,email_other,Massage))
-                # print ('address: %s' %address)
-
-            # M.select('[Gmail]/Trash')  # select all trash
-            # M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
-            M.expunge()  # not need if auto-expunge enabled
-            M.close()
-            #M.logout()?
-        else:
-            raise MailException("ERROR: Unable to open mailbox ", rv)
+    def readMessages(self):            # print( "Processing mailbox...\n")
+        for msg in self.process_mailbox():
+            msg_parse = self.parseMsg(msg)
+            print ('%s(%s) says: %s' %(msg_parse['machin_other'],
+                                        msg_parse['email_other'],
+                                        msg_parse['Massage'],
+                                        ))
+        # M.select('[Gmail]/Trash')  # select all trash
+        # M.store("1:*", '+FLAGS', '\\Deleted')  #Flag all Trash as Deleted
 
 
-    class MailException(Exception):
-        pass
-
+class MailException(Exception):
+    pass
 
 
 if __name__ == '__main__':
@@ -114,7 +108,9 @@ if __name__ == '__main__':
     else:
         mail = MessageNet()
         if(sys.argv[1]=="read"):
+            mail.open_read()
             mail.readMessages()
+            mail.close_read()
         else:
             if(len(sys.argv) == 2):  mail.sendMessage(raw_input("message:"))
             else :  mail.sendMessage(sys.argv[2])

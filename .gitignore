@@ -1,3 +1,5 @@
 .gitignore
 references.txt
 prog_data.json
+prog_data2.json
+*.pyc

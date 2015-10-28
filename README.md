@@ -5,19 +5,22 @@ With or without firewall, other networks etc.  ->  one can use this library
 
 ###Configuring Gmail account
 - Make a Gmail account dedicated for this
-- Make a label in the same name as the "this-user" field in the json file will have
-- Make a filter which forwardes emails addressed youremail+this-user@gmail.com to this-user label
+- Make a labels called <user> and <user>\_received, will <user> is same as this-user field in the json file
+- Make a filter which forwards emails addressed <user> to <user> label
 - Allow the use of untrusted apps:
     * while in your account go to this link and turn it on
     * https://www.google.com/settings/security/lesssecureapps
 
 
 ###Configuring the app
-- copy the file called "prog_data_example.json" to prog_data.json and update its data
-
+- rename the file called "prog_data_example.json" to prog_data.json and update its data
+  * email - your gmail account (just the user name - prefix of the email)
+  * password - gmails password
+  * this user - a name which will be used as your machine name
+  * other email - can be same as your email
+  * other user 0 - name of the other machine
 
 ####Notes & Work in progress
 - For now we are relaying on gmail service
-- There is just two PCs communication so far
-- You have a different script for sending and receiving massages
 - Add option of fetching all the received massages
+- An example of chat between two PCs included

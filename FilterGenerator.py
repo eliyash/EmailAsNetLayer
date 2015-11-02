@@ -9,6 +9,7 @@ def FilterGenerator(Labels):
 
     filters = ""
     for Label in Labels:
+        # for status in ["","_received"]
         filters += """
         	<entry>
         		<category term='filter'></category>

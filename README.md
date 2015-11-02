@@ -5,9 +5,9 @@ With or without firewall, other networks etc.  ->  one can use this library
 
 ###Configuring Gmail account
 - Make a Gmail account dedicated for this
-- Make a labels called <user> and <user>\_received, will <user> is same as this-user field in the json file
+- Make a labels called <user> and \<user\>\_received, will \<user\> is same as this-user field in the json file
 - Filters
-    * Run FilterGenerator.py with all the <user>'s which will use this machine
+    * Run FilterGenerator.py with all the \<user\>'s which will use this machine
     * add the generated Filters.xml file to:  Settings->Filters_and_Blocked_Addresses->Import_filters
 - Allow the use of untrusted apps:
     * while in your account go to this link and turn it on

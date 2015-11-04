@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from Queue import Queue
 from time import sleep
 from threading import Thread
 from MessageNet import MessageNet
@@ -23,8 +24,14 @@ def printLoop():
         sleep(0.1)
     mail.close_read()
 
-def sendLoop(massage):
-    mail.sendMessage(massage)
+# def sendLoop(massage):
+#     mail.sendMessage(massage)
+
+def sendLoop():
+    global mail,sendMassagesQueue
+    while(True):
+        mail.sendMessage(sendMassagesQueue.get())
+
 
 class simpleapp_tk(Tkinter.Tk):
     def __init__(self,parent):
@@ -70,29 +77,35 @@ class simpleapp_tk(Tkinter.Tk):
         # textBox.pack(anchor = "w", padx = 50, pady = 50)
 
     def OnButtonClick(self):#TODO: remove du
-        global mail,textBox
+        global mail,textBox,sendMassagesQueue
         textBox.insert('insert',"You sent: " + self.entryVariable.get()+'\n' )
         self.entry.focus_set()
         self.entry.selection_range(0, Tkinter.END)
-        Thread(target=sendLoop,args=(self.entryVariable.get(),)).start()
+        sendMassagesQueue.put(self.entryVariable.get())
+        # Thread(target=sendLoop,args=(self.entryVariable.get(),)).start()
 
     def OnPressEnter(self,event):
-        global mail,textBox
+        global mail,textBox,sendMassagesQueue
         textBox.insert('insert',"You sent: " + self.entryVariable.get()+'\n' )
         self.entry.focus_set()
         self.entry.selection_range(0, Tkinter.END)
-        Thread(target=sendLoop,args=(self.entryVariable.get(),)).start()
+        sendMassagesQueue.put(self.entryVariable.get())
+        # Thread(target=sendLoop,args=(self.entryVariable.get(),)).start()
 
 
 if __name__ == '__main__':
-    global mail,textBox
+    global mail,textBox,sendMassagesQueue
+
     if (len(sys.argv) < 2):
         print ("error , add json file")
     else:
+        sendMassagesQueue = Queue()
         print("----------< CHAT STARTED >-------------")
         mail = MessageNet(sys.argv[1])
         app = simpleapp_tk(None)
         app.title('Chat using Gmail!')
         readingLoop = Thread(target=printLoop)
+        sendingLoop = Thread(target=sendLoop)
         readingLoop.start()
+        sendingLoop.start()
         app.mainloop()

@@ -4,13 +4,11 @@ With or without firewall, other networks etc.  ->  one can use this library
 
 
 ###Configuring Gmail account
-- Make a Gmail account dedicated for this
-- Make a labels called <user> and \<user\>\_received, will \<user\> is same as this-user field in the json file
+- We recomend creating new Gmail account dedicated for project
 - Filters
-    * Run FilterGenerator.py with all the \<user\>'s which will use this machine
-    * add the generated Filters.xml file to:  Settings->Filters_and_Blocked_Addresses->Import_filters
-- Allow the use of untrusted apps:
-    * while in your account go to this link and turn it on
+    * Run FilterGenerator.py with all the this-user field's which will use this email
+    * add the generated Filters.xml file to:  Settings=>Filters_and_Blocked_Addresses=>Import_filters
+- enter the account while your logged ingo to this link and turn it on:
     * https://www.google.com/settings/security/lesssecureapps
 
 
@@ -25,4 +23,5 @@ With or without firewall, other networks etc.  ->  one can use this library
 ####Notes & Work in progress
 - For now we are relaying on gmail service
 - Add option of fetching all the received massages
-- An example of chat between two PCs included
+- An example of chat(with and without gui) between two PCs included
+- for now just ascii text is supported

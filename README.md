@@ -1,9 +1,9 @@
-#Network communication using email service
+# Network communication using email service
 For the need of passing data between random PCs,
 With or without firewall, other networks etc.  ->  one can use this library
 
 
-###Configuring Gmail account
+### Configuring Gmail account
 - We recomend creating new Gmail account dedicated for project
 - Filters
     * Run FilterGenerator.py with all the this-user field's which will use this email
@@ -12,7 +12,7 @@ With or without firewall, other networks etc.  ->  one can use this library
     * https://www.google.com/settings/security/lesssecureapps
 
 
-###Configuring the app
+### Configuring the app
 - rename the file called "prog_data_example.json" to prog_data.json and update its data
   * email - your gmail account (just the user name - prefix of the email)
   * password - gmails password
@@ -20,7 +20,7 @@ With or without firewall, other networks etc.  ->  one can use this library
   * other email - can be same as your email
   * other user 0 - name of the other machine
 
-####Notes & Work in progress
+#### Notes & Work in progress
 - For now we are relaying on gmail service
 - Add option of fetching all the received massages
 - An example of chat(with and without gui) between two PCs included
